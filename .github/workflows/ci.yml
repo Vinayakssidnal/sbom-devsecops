@@ -22,3 +22,28 @@ jobs:
 
     - name: Test
       run: npm test || echo "No tests"
+
+     # 🔐 Install Grype
+    - name: Install Grype
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh
+
+    # 🔍 Scan and save JSON
+    - name: Run Security Scan
+      run: |
+        grype . -o json > report.json
+
+    # 📁 Upload report
+    - name: Upload Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: vulnerability-report
+        path: report.json
+
+    # ❌ Fail if vulnerabilities found
+    - name: Fail if vulnerabilities exist
+      run: |
+        if grep -q '"severity":"Critical"' report.json; then
+          echo "Critical vulnerabilities found!"
+          exit 1
+        fi
