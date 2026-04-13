@@ -26,8 +26,7 @@ jobs:
      # 🔐 Install Grype
     - name: Install Grype
       run: |
-        curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
     # 🔍 Scan and save JSON
     - name: Run Security Scan
       run: |
