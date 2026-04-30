@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sbom-app-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sbom-app
+  template:
+    metadata:
+      labels:
+        app: sbom-app
+    spec:
+      containers:
+        - name: sbom-app
+          image: sbom-app
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
