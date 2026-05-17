@@ -1,0 +1,18 @@
+{
+  "sbom": {
+    "artifacts": [
+      { "name": "log4j", "version": "2.14.0" }
+    ]
+  },
+  "vulnerabilities": {
+    "matches": [
+      {
+        "artifact": { "name": "log4j", "version": "2.14.0" },
+        "vulnerability": {
+          "id": "CVE-2021-44228",
+          "severity": "Critical"
+        }
+      }
+    ]
+  }
+}

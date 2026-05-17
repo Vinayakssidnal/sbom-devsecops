@@ -1,0 +1,26 @@
+{
+  "storedAt": "2026-05-12T12:53:02.733Z",
+  "summary": {
+    "critical": 1,
+    "high": 1,
+    "medium": 0,
+    "low": 0,
+    "total": 2
+  },
+  "report": {
+    "matches": [
+      {
+        "vulnerability": {
+          "severity": "Critical",
+          "id": "CVE-1234"
+        }
+      },
+      {
+        "vulnerability": {
+          "severity": "High",
+          "id": "CVE-5678"
+        }
+      }
+    ]
+  }
+}

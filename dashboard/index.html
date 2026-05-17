@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SBOM DevSecOps Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/dashboard/style.css" />
+</head>
+
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">SBOM DevSecOps</span>
+        <h1>SBOM-first vulnerability dashboard</h1>
+        <p>Track package inventory, filtered vulnerabilities, and report health from your SBOM workflow in one place.
+        </p>
+      </div>
+      <div class="hero-panel">
+        <div class="control-row">
+          <label class="select-wrap">Report
+            <select id="reportSelector">
+              <option value="">Latest report</option>
+            </select>
+          </label>
+          <button id="refreshBtn" type="button">Refresh</button>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-pill"><span>Report</span><strong id="reportIdStat">—</strong></div>
+          <div class="stat-pill"><span>Updated</span><strong id="lastUpdatedStat">—</strong></div>
+          <div class="stat-pill"><span>Packages</span><strong id="totalPackagesStat">—</strong></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="grid summary-grid">
+      <article class="summary-card">
+        <span>Scan status</span>
+        <div id="statusBadge" class="pill pill--loading">Loading</div>
+        <p class="section-meta meta" id="reportMeta">Fetching latest SBOM and report data…</p>
+      </article>
+      <article class="summary-card">
+        <span>Critical</span>
+        <strong id="criticalCount">—</strong>
+      </article>
+      <article class="summary-card">
+        <span>High</span>
+        <strong id="highCount">—</strong>
+      </article>
+      <article class="summary-card">
+        <span>Medium</span>
+        <strong id="mediumCount">—</strong>
+      </article>
+      <article class="summary-card">
+        <span>Low</span>
+        <strong id="lowCount">—</strong>
+      </article>
+    </section>
+
+    <main class="grid report-grid">
+      <section class="section-panel">
+        <div class="section-header">
+          <div>
+            <h2>High & Critical findings</h2>
+            <p class="meta" id="findingCount">Loading vulnerabilities…</p>
+          </div>
+          <div id="findingStatus" class="pill pill--loading">Loading</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Severity</th>
+                <th>Vulnerability</th>
+                <th>Package</th>
+                <th>Fix</th>
+              </tr>
+            </thead>
+            <tbody id="findingsTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section-panel">
+        <div class="section-header">
+          <div>
+            <h2>SBOM package inventory</h2>
+            <p class="meta" id="packageCount">Loading package details…</p>
+          </div>
+        </div>
+        <div id="packageList" class="package-list"></div>
+      </section>
+    </main>
+
+    <section class="section-panel" style="margin-top: 20px;">
+      <div class="section-header">
+        <div>
+          <h2>Report details</h2>
+          <p class="meta">Selected SBOM analysis report</p>
+        </div>
+      </div>
+      <dl class="report-details">
+        <div>
+          <dt>Report File</dt>
+          <dd id="reportId">—</dd>
+        </div>
+        <div>
+          <dt>Last updated</dt>
+          <dd id="lastUpdated">—</dd>
+        </div>
+        <div>
+          <dt>Total SBOM packages</dt>
+          <dd id="totalPackages">—</dd>
+        </div>
+      </dl>
+    </section>
+
+    <footer class="footer">SBOM DevSecOps · Live SBOM scan integration</footer>
+  </div>
+
+  <script src="/dashboard/app.js"></script>
+</body>
+
+</html>
