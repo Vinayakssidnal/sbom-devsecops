@@ -3,6 +3,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Container-blue)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestration-326ce5)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
+![CI/CD](https://img.shields.io/badge/CI-CD-success)
 
 A Node.js-based DevSecOps dashboard for Software Bill of Materials (SBOM) analysis and vulnerability scanning using Syft and Grype.
 
@@ -59,21 +60,12 @@ A Node.js-based DevSecOps dashboard for Software Bill of Materials (SBOM) analys
    npm install
    ```
 
-### Running Locally
-1. Start the server:
-   ```bash
-   npm start
-   ```
-2. Open your web browser
-3. Go to the dashboard: http://localhost:4000/dashboard
-4. Check API base: http://localhost:4000/api
-
 ### Generating SBOM
 
 Generate Software Bill of Materials using Syft:
 
 ```bash
-syft . -o syft-json > sbom.json
+syft . -o syft-json=sbom.json
 ```
 
 Expected:
@@ -86,13 +78,77 @@ Expected:
 Scan project vulnerabilities using Grype:
 
 ```bash
-grype . -o json > report.json
+grype . -o json=report.json
 ```
 
 Expected:
 - `report.json` generated in project root
 
 ---
+
+### Historical Report Generation
+
+Generate timestamped vulnerability reports for historical tracking:
+
+```powershell
+$time = Get-Date -Format "yyyyMMdd-HHmmss"
+grype . -o json=reports/report-$time.json
+```
+
+Example generated report:
+
+```text
+reports/report-20260517-231045.json
+```
+
+Generate timestamped SBOM reports:
+
+```powershell
+$time = Get-Date -Format "yyyyMMdd-HHmmss"
+syft . -o syft-json=reports/sbom-$time.json
+```
+
+Features:
+- Historical vulnerability tracking
+- Report comparison
+- Dashboard report selection
+- Audit-friendly report storage
+
+---
+
+
+## Running Locally
+
+### Terminal 1 — Start Backend
+
+1. Start the server:
+   
+   ```bash
+   npm start
+   ```
+   Expected:
+   ```text
+   Server running on port 4000
+   ```
+      
+   Keep this terminal running.
+   
+2. Open your web browser
+3. Go to the dashboard:
+   
+   ```text
+   http://localhost:4000/dashboard
+   ```
+4. Check API base: 
+   
+   ```text
+   http://localhost:4000/api
+   ```
+5. Open Metrics Endpoint:
+   
+   ```text
+   http://localhost:4000/metrics
+   ```
 
 ### Testing the analyze API
 1. Use POST for analyze requests with the expected JSON structure:
@@ -102,21 +158,30 @@ Expected:
      -d '{"sbom": {}, "vulnerabilities": {"matches": []}}'
    ```
 
-### Running with Docker
+## Running with Docker
+
+### Terminal 2 — Build Docker Image
+
 1. Make sure Docker Desktop is running
 2. Build the Docker image:
    ```bash
-   docker build -t sbom-devsecops .
+   docker build -t sbom-app .
    ```
 3. Run the container:
    ```bash
-   docker run -p 4000:4000 sbom-devsecops
+   docker run -p 4000:4000 sbom-app
    ```
    Expected:
    ```text
    Server running on port 4000
    ```
-4. Open browser to http://localhost:4000/dashboard
+   Keep this terminal running.
+   
+4. Open browser:
+
+   ```text
+   http://localhost:4000/dashboard
+   ```
 
 ### Testing
 1. In the project folder, run:
@@ -128,23 +193,8 @@ Expected:
    PASS
    ```
 
-### Dashboard Features
-
-The dashboard provides:
-
-- Vulnerability statistics
-- High/Critical CVE findings
-- SBOM package inventory
-- Package metadata and licenses
-- Report history
-- Prometheus metrics integration
-
-Dashboard URL:
-
-```text
-http://localhost:4000/dashboard
-```
-
+   Keep backend server running while testing APIs and dashboard.
+   
 ---
 
 ### API Endpoints
@@ -153,9 +203,6 @@ http://localhost:4000/dashboard
 - Get reports: GET http://localhost:4000/api/reports
 - Get SBOM: GET http://localhost:4000/api/sbom
 - Metrics: GET http://localhost:4000/metrics
-
-### Additional API Endpoints
-
 - Vulnerability Stats: GET http://localhost:4000/api/stats
 - Filtered Vulnerability Report: GET http://localhost:4000/api/filtered-report
 
@@ -165,6 +212,7 @@ http://localhost:4000/dashboard
 > Note: `GET /api/analyze` is not valid. Use `POST /api/analyze` with JSON payload.
 
 ### Kubernetes Deployment
+
 1. Start Minikube:
    ```bash
    minikube start
@@ -174,7 +222,7 @@ http://localhost:4000/dashboard
 
 3. Load Docker image into Minikube:
    ```bash
-   minikube image load sbom-devsecops
+   minikube image load sbom-app
    ```
 
 4. Apply Kubernetes manifests:
@@ -195,6 +243,8 @@ http://localhost:4000/dashboard
    ```bash
    minikube service sbom-app-service
    ```
+
+   Keep this terminal open while accessing the Kubernetes dashboard.
 
 7. View pod logs:
    ```bash
@@ -231,20 +281,86 @@ Metrics include:
 
 ---
 
-## Grafana Integration
+## Running Prometheus
 
-Configure Prometheus datasource:
+### Terminal 3 — Start Prometheus
+
+1. Run Prometheus:
+
+```powershell
+docker run -p 9090:9090 `
+-v ${PWD}/prometheus.yml:/etc/prometheus/prometheus.yml `
+prom/prometheus
+```
+
+Keep this terminal running.
+
+2. Open Prometheus UI:
 
 ```text
 http://localhost:9090
 ```
+3. Verify Targets
 
-Use Grafana dashboards for:
-- Vulnerability monitoring
-- Application metrics
-- System observability
+```text
+http://localhost:9090/targets
+```
+
+Expected:
+- prometheus → UP
+- sbom-app → UP
+
+### Example Queries
+
+```promql
+sbom_vulnerabilities_total
+```
+
+```promql
+sbom_packages_total
+```
+---
+
+## Grafana Integration
+
+### Terminal 4 — Start Grafana
+
+```powershell
+docker run -p 3000:3000 grafana/grafana
+```
+
+Keep this terminal running.
 
 ---
+
+Configure Prometheus datasource:
+1. Open Grafana
+
+   ```text
+   http://localhost:3000
+   ```
+   
+   Default login:
+   
+   ```text
+   Username: admin
+   Password: admin
+   ```
+
+2. Add Prometheus Datasource
+
+   ```text
+   http://host.docker.internal:9090
+   ```
+
+3. Example Prometheus Queries
+
+   ```promql
+   sbom_vulnerabilities_total
+   ```
+   ```promql
+   sbom_packages_total
+   ```
 
 ## CI/CD Workflow
 
@@ -296,7 +412,7 @@ Grafana Dashboard
 │   ├── controllers/        # API controllers
 │   ├── routes/             # API routes
 │   └── services/           # Business logic
-├── dashboard/              # Frontend dashboard
+├── dashboard/             # Frontend dashboard
 ├── k8s/                   # Kubernetes manifests
 ├── reports/               # Vulnerability scan reports
 ├── sbom.json              # Generated SBOM
