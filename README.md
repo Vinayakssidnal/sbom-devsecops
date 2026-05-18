@@ -106,11 +106,11 @@ Expected:
 1. Make sure Docker Desktop is running
 2. Build the Docker image:
    ```bash
-   docker build -t sbom-devsecops .
+   docker build -t sbom-app .
    ```
 3. Run the container:
    ```bash
-   docker run -p 4000:4000 sbom-devsecops
+   docker run -p 4000:4000 sbom-app
    ```
    Expected:
    ```text
