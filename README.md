@@ -174,7 +174,7 @@ http://localhost:4000/dashboard
 
 3. Load Docker image into Minikube:
    ```bash
-   minikube image load sbom-devsecops
+   minikube image load sbom-app
    ```
 
 4. Apply Kubernetes manifests:
