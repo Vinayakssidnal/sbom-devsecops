@@ -1,0 +1,86 @@
+name: CI Pipeline
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Install Grype
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Generate SBOM
+        run: syft . -o json > sbom.json
+
+      - name: Run security scan
+        run: grype sbom:sbom.json -o json > report.json
+
+      - name: Start backend
+        run: npm start &
+
+      - name: Wait for backend to start
+        run: sleep 10
+
+      - name: Upload report to backend
+        run: |
+          curl -X POST "http://localhost:4000/upload-report" \
+            -H "Content-Type: application/json" \
+            --data-binary @report.json
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Validate critical severity
+        run: |
+          critical=$(jq '[.matches[] | select(.vulnerability.severity=="Critical")] | length' report.json)
+          echo "Critical vulnerabilities: $critical"
+          if [ "$critical" -gt 0 ]; then
+            echo "❌ Critical vulnerabilities detected."
+            exit 1
+          fi
+
+      - name: Upload scan artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-scan-artifacts
+          path: |
+            sbom.json
+            report.json

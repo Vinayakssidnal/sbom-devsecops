@@ -1,0 +1,173 @@
+{
+    "dashboard": {
+        "id": null,
+        "title": "SBOM DevSecOps Dashboard",
+        "tags": [
+            "sbom",
+            "security",
+            "devsecops"
+        ],
+        "timezone": "browser",
+        "panels": [
+            {
+                "id": 1,
+                "title": "SBOM Packages Total",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "sbom_packages_total",
+                        "refId": "A"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                }
+                            ]
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            {
+                "id": 2,
+                "title": "Scan Status",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "sbom_scan_status",
+                        "refId": "A"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "mappings": [
+                            {
+                                "options": {
+                                    "1": {
+                                        "text": "SUCCESS",
+                                        "color": "green"
+                                    },
+                                    "2": {
+                                        "text": "FAIL",
+                                        "color": "red"
+                                    }
+                                },
+                                "type": "value"
+                            }
+                        ]
+                    }
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 0
+                }
+            },
+            {
+                "id": 3,
+                "title": "Vulnerabilities by Severity",
+                "type": "bargauge",
+                "targets": [
+                    {
+                        "expr": "sbom_vulnerabilities_total",
+                        "refId": "A",
+                        "legendFormat": "{{severity}}"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 8
+                }
+            },
+            {
+                "id": 4,
+                "title": "Vulnerabilities Over Time",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "increase(sbom_vulnerabilities_total[5m])",
+                        "refId": "A",
+                        "legendFormat": "{{severity}} vulnerabilities"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 16
+                }
+            },
+            {
+                "id": 5,
+                "title": "System Metrics",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(process_cpu_user_seconds_total[5m]) * 100",
+                        "refId": "A",
+                        "legendFormat": "CPU Usage %"
+                    },
+                    {
+                        "expr": "process_resident_memory_bytes / 1024 / 1024",
+                        "refId": "B",
+                        "legendFormat": "Memory Usage MB"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 24
+                }
+            }
+        ],
+        "time": {
+            "from": "now-1h",
+            "to": "now"
+        },
+        "timepicker": {},
+        "templating": {
+            "list": []
+        },
+        "annotations": {
+            "list": []
+        },
+        "refresh": "5s",
+        "schemaVersion": 27,
+        "version": 0,
+        "links": []
+    }
+}

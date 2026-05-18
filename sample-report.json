@@ -1,0 +1,16 @@
+{
+  "matches": [
+    {
+      "vulnerability": {
+        "severity": "Critical",
+        "id": "CVE-1234"
+      }
+    },
+    {
+      "vulnerability": {
+        "severity": "High",
+        "id": "CVE-5678"
+      }
+    }
+  ]
+}
