@@ -73,7 +73,7 @@ A Node.js-based DevSecOps dashboard for Software Bill of Materials (SBOM) analys
 Generate Software Bill of Materials using Syft:
 
 ```bash
-syft . -o syft-json > sbom.json
+syft . -o syft-json=sbom.json
 ```
 
 Expected:
@@ -86,7 +86,7 @@ Expected:
 Scan project vulnerabilities using Grype:
 
 ```bash
-grype . -o json > report.json
+grype . -o json=report.json
 ```
 
 Expected:
